@@ -18,30 +18,4 @@ public class CheckoutService {
         return promotionEngine.applyPromotion(basket);
     }
 
-    public List<CheckOutItem> getBasket(){
-        List<CheckOutItem> checkOutItems = new ArrayList<>();
-
-        CheckOutItem checkOutItemA = new CheckOutItem();
-        checkOutItemA.setSku("A");
-        checkOutItemA.setQuantity(5);
-
-        CheckOutItem checkOutItemB = new CheckOutItem();
-        checkOutItemB.setSku("B");
-        checkOutItemB.setQuantity(5);
-
-        CheckOutItem checkOutItemC = new CheckOutItem();
-        checkOutItemC.setSku("C");
-        checkOutItemC.setQuantity(1);
-
-        CheckOutItem checkOutItemD = new CheckOutItem();
-        checkOutItemD.setSku("D");
-        checkOutItemD.setQuantity(1);
-        checkOutItems.add(checkOutItemA);
-        checkOutItems.add(checkOutItemB);
-        checkOutItems.add(checkOutItemC);
-        checkOutItems.add(checkOutItemD);
-
-        return checkOutItems;
-    }
-
 }
