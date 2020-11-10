@@ -3,19 +3,48 @@ package com.example.demo.engine;
 import com.example.demo.data.Promotion;
 import com.example.demo.models.CheckOutItem;
 import com.example.demo.utils.PromotionType;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class PromotionEngine {
 
     public Integer applyPromotion(List<CheckOutItem> checkOutItems){
 
-        return 0;
+        Map<String, Integer> skuQuantityMap = checkOutItems.stream().collect(Collectors
+                .toMap(CheckOutItem::getSku, checkOutItem -> checkOutItem.getQuantity()));
+
+        Map<String, Integer> appliedPromotionMap = new HashMap<>();
+
+        getActivePromotion().forEach( promotion -> {
+            // If promotion is on Quantity and Quantity of SKU is greater in checkoutBasket
+            if(PromotionType.QUANTITY.getPromotionType().equalsIgnoreCase(promotion.getType()) &&
+                    skuQuantityMap.get(promotion.getSkus()) >= promotion.getQuantity() ){
+                Integer timesToApply = skuQuantityMap.get(promotion.getSkus())/promotion.getQuantity();
+                Integer newQuantity = skuQuantityMap.get(promotion.getSkus()) - timesToApply * promotion.getQuantity();
+                skuQuantityMap.put(promotion.getSkus(), newQuantity);
+                appliedPromotionMap.put(promotion.getSkus(), promotion.getDiscountedPrice() * timesToApply);
+            }
+        });
+
+        log.info("PROMOTION =================> "+appliedPromotionMap);
+        log.info("QUANTITY_MAP =================> "+skuQuantityMap);
+        log.info("Final SUM :=> "+ calculateFinalPrice(skuQuantityMap, appliedPromotionMap));
+
+        return calculateFinalPrice(skuQuantityMap, appliedPromotionMap);
+
+    }
+
+    public Integer calculateFinalPrice( Map<String, Integer> skuQuantityMap, Map<String, Integer>  appliedPromotionMap){
+
+        return skuQuantityMap.entrySet().stream()
+                .mapToInt( sku -> sku.getValue() * getSkuPriceList().get(sku.getKey())).sum() +
+                appliedPromotionMap.entrySet().stream().mapToInt( sku -> sku.getValue()).sum();
 
     }
 

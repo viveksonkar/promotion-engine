@@ -35,6 +35,6 @@ public class CheckoutServiceTest {
         checkOutItems.add(checkOutItemA);
         checkOutItems.add(checkOutItemB);
 
-        assertEquals(Integer.valueOf(0),checkoutService.getFinalPrice(checkOutItems));
+        assertEquals(Integer.valueOf(350),checkoutService.getFinalPrice(checkOutItems));
     }
 }
