@@ -30,6 +30,24 @@ public class PromotionEngine {
                 skuQuantityMap.put(promotion.getSkus(), newQuantity);
                 appliedPromotionMap.put(promotion.getSkus(), promotion.getDiscountedPrice() * timesToApply);
             }
+            // If promotion is Combination then we have to check it required quantities are present
+            else if(PromotionType.COMBINATION.getPromotionType().equalsIgnoreCase(promotion.getType())){
+
+                List<String> skuList = Arrays.asList(promotion.getSkus().split(",")).stream()
+                        .filter( sku -> null != skuQuantityMap.get(sku) && skuQuantityMap.get(sku) >= promotion.getQuantity())
+                        .collect(Collectors.toList());
+
+                if(!CollectionUtils.isEmpty(skuList) && skuList.size() == promotion.getSkus().split(",").length){
+                    Integer timesToApply = skuList.stream().map(skuQuantityMap::get)
+                            .mapToInt( quantity -> quantity).min().orElse(0);
+
+                    skuList.forEach(sku -> {
+                        Integer newQuantity = skuQuantityMap.get(sku) - timesToApply * promotion.getQuantity();
+                        skuQuantityMap.put(sku, newQuantity);
+                    });
+                    appliedPromotionMap.put(promotion.getSkus(), promotion.getDiscountedPrice() * timesToApply);
+                }
+            }
         });
 
         log.info("PROMOTION =================> "+appliedPromotionMap);
