@@ -24,5 +24,17 @@ pipeline {
                 }
             }
         }
+		
+		stage ('Build Docker Image') {
+            steps {
+                sh 'docker build -t promotion-engine .' 
+            }
+        }
+		
+		stage ('Docker Run Image') {
+            steps {
+                sh 'docker run -dp 3000:8080 promotion-engine' 
+            }
+        }
     }
 }
