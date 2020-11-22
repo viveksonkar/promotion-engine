@@ -33,7 +33,7 @@ pipeline {
 		
 		stage ('Docker Run Image') {
             steps {
-                sh 'docker run -dp 3000:8080 promotion-engine' 
+                sh 'docker run -dp 4200:8080 promotion-engine' 
             }
         }
     }
